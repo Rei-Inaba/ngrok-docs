@@ -1,14 +1,44 @@
----
-hide_table_of_contents: true
-displayed_sidebar: docs
----
+<!DOCTYPE html>
+<html>
+<head>
+    <title>FashionAI</title>
+</head>
+<body>
+    <h1>FashionAI</h1>
+    <button onclick="measure()">Measure Body</button>
+    <button onclick="suggest()">Suggest Clothing</button>
+    <button onclick="generate()">Generate Image</button>
+    <div id="result"></div>
 
-import ErrorDetails from "/src/components/ErrorDetails";
+    <script>
+        function measure() {
+            fetch('/measure', { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('result').innerText = 'Measurements: ' + JSON.stringify(data);
+                });
+        }
 
-# ERR_NGROK_3200
+        function suggest() {
+            fetch('/suggest')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('result').innerText = 'Suggestions: ' + data.suggestions;
+                });
+        }
 
-### Message
-
-Tunnel `HOSTNAME` not found
-
-<ErrorDetails error="err_ngrok_3200" />
+        function generate() {
+            const description = prompt('Enter clothing description:');
+            fetch('/generate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ description: description })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('result').innerHTML = '<img src="' + data.image_url + '" />';
+                });
+        }
+    </script>
+</body>
+</html>
